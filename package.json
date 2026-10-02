@@ -17,6 +17,7 @@
   },
   "license": "MIT",
   "files": [
+    "index.js",
     "dist",
     "README.md"
   ],
@@ -27,7 +28,7 @@
   },
   "pi": {
     "extensions": [
-      "./dist/index.js"
+      "./index.js"
     ]
   },
   "scripts": {
