@@ -2,18 +2,12 @@
 
 Lightweight Pi extension that opens [lazygit](https://github.com/jesseduffield/lazygit) in a popup terminal.
 
+Based on `pi-lazygit` by Neil Vallecer ([Neil-urk12/pi-dots](https://github.com/Neil-urk12/pi-dots)), MIT.
+
 ## Install
 
 ```bash
-pi install npm:@neilurk12/pi-lazygit
-```
-
-Or add to your pi config manually:
-
-```json
-{
-  "extensions": ["@neilurk12/pi-lazygit"]
-}
+pi install git:github.com/aburneikis/pi-lazygit
 ```
 
 ## Usage

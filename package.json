@@ -1,5 +1,5 @@
 {
-  "name": "@neilurk12/pi-lazygit",
+  "name": "pi-lazygit",
   "version": "0.1.1",
   "description": "Open lazygit in popup terminal via /lazygit or Ctrl+Shift+G",
   "type": "module",
@@ -13,13 +13,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Neil-urk12/pi-dots.git"
+    "url": "git+https://github.com/aburneikis/pi-lazygit.git"
   },
   "license": "MIT",
   "files": [
     "index.js",
     "dist",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
