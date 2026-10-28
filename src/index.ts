@@ -7,6 +7,17 @@ export interface TUIController {
 	requestRender(force: boolean): void;
 }
 
+function ignoreSigint(): () => void {
+	const handlers = process.listeners("SIGINT");
+	const ignore = () => {};
+	process.removeAllListeners("SIGINT");
+	process.on("SIGINT", ignore);
+	return () => {
+		process.off("SIGINT", ignore);
+		for (const handler of handlers) process.on("SIGINT", handler);
+	};
+}
+
 export function runFullscreenProcess(
 	command: string,
 	args: string[],
@@ -15,11 +26,15 @@ export function runFullscreenProcess(
 	return new Promise((resolve, reject) => {
 		tui.stop();
 		process.stdout.write("\x1b[2J\x1b[H");
+		// Ctrl+C in a cooked-mode subprocess (e.g. an `output: terminal` custom command) signals pi's whole process group.
+		const restoreSigint = ignoreSigint();
 
 		let settled = false;
 		const finish = (err?: Error) => {
 			if (settled) return;
 			settled = true;
+			process.off("exit", killChild);
+			restoreSigint();
 			tui.start();
 			tui.requestRender(true);
 			if (err) reject(err);
@@ -30,6 +45,9 @@ export function runFullscreenProcess(
 			stdio: "inherit",
 			env: process.env,
 		});
+		// Once pi exits, the shell no longer forwards SIGHUP to this child, so it would outlive the terminal.
+		const killChild = () => child.kill("SIGHUP");
+		process.once("exit", killChild);
 
 		child.on("close", () => finish());
 		child.on("error", (err) => finish(err));

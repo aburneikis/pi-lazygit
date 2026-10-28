@@ -44,6 +44,26 @@ describe("runFullscreenProcess", () => {
 		expect(tui.calls[tui.calls.length - 1]).toBe("requestRender(true)");
 	});
 
+	it("kills the child when pi exits while it is running", async () => {
+		const before = process.listeners("exit");
+		const run = runFullscreenProcess("sleep", ["30"], mockTUI());
+		const [killChild] = process.listeners("exit").filter((l) => !before.includes(l));
+		(killChild as () => void)();
+		await run;
+		expect(process.listeners("exit")).toEqual(before);
+	});
+
+	it("swallows SIGINT while the child runs and restores handlers after", async () => {
+		const piHandler = vi.fn();
+		process.on("SIGINT", piHandler);
+		const run = runFullscreenProcess("sleep", ["0.2"], mockTUI());
+		process.emit("SIGINT");
+		await run;
+		expect(piHandler).not.toHaveBeenCalled();
+		expect(process.listeners("SIGINT")).toContain(piHandler);
+		process.off("SIGINT", piHandler);
+	});
+
 	it("handles double-close safely", async () => {
 		const tui = mockTUI();
 		// Normal run — just verify it doesn't throw or call start() twice
